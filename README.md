@@ -132,8 +132,9 @@ This architecture is suitable when:
    ```
 
 3. The services will be available at:
-   - Auth Service: http://localhost/auth
-   - Posts Service: http://localhost/posts
+   - Auth Service: http://localhost:8001
+   - Posts Service: http://localhost:8002
+   - phpmyadmin GUI: http://localhost:8085
 
 ## API Endpoints
 
