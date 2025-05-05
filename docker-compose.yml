@@ -1,0 +1,86 @@
+version: '3.8'
+
+services:
+  # Auth Service
+  auth:
+    build: ./auth
+    ports:
+      - "8001:8000"
+    volumes:
+      - ./auth:/var/www/html
+    environment:
+      - DB_CONNECTION=mysql
+      - DB_HOST=auth-db
+      - DB_DATABASE=auth_db
+      - DB_USERNAME=root
+      - DB_PASSWORD=password
+    depends_on:
+      - auth-db
+    networks:
+      - microservices
+
+  # Auth Database
+  auth-db:
+    image: mysql:8.0
+    environment:
+      MYSQL_DATABASE: auth_db
+      MYSQL_ROOT_PASSWORD: password
+    volumes:
+      - auth-db-data:/var/lib/mysql
+    networks:
+      - microservices
+
+  # Posts Service
+  posts:
+    build: ./posts
+    ports:
+      - "8002:8000"
+    volumes:
+      - ./posts:/var/www/html
+    environment:
+      - DB_CONNECTION=mysql
+      - DB_HOST=posts-db
+      - DB_DATABASE=posts_db
+      - DB_USERNAME=root
+      - DB_PASSWORD=password
+      - AUTH_SERVICE_URL=http://auth:8000
+    depends_on:
+      - posts-db
+      - auth
+    networks:
+      - microservices
+
+  # Posts Database
+  posts-db:
+    image: mysql:8.0
+    environment:
+      MYSQL_DATABASE: posts_db
+      MYSQL_ROOT_PASSWORD: password
+    volumes:
+      - posts-db-data:/var/lib/mysql
+    networks:
+      - microservices
+
+  # phpMyAdmin GUI
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    restart: always
+    ports:
+      - "8085:80"
+    environment:
+      PMA_ARBITRARY: 1
+      PMA_HOSTS: auth-db,posts-db
+      PMA_USER: root
+      PMA_PASSWORD: password
+    depends_on:
+      - auth-db
+      - posts-db
+    networks:
+      - microservices
+
+volumes:
+  auth-db-data:
+  posts-db-data:
+
+networks:
+  microservices:
