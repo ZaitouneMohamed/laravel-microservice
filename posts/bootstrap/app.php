@@ -13,7 +13,6 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware) {
-        //"verify.token" => VerifyToken::class
         $middleware->api(append: [
             VerifyToken::class,
         ]);

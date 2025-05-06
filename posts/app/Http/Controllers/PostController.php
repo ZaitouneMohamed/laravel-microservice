@@ -9,8 +9,9 @@ use Illuminate\Support\Facades\Validator;
 
 class PostController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
+        return $request->user_data;
         $posts = Post::latest()->get();
         return PostResource::collection($posts);
         //return response()->json($posts);
